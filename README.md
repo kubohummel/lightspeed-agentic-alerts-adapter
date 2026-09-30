@@ -51,7 +51,9 @@ The adapter runs as a single-replica Deployment in the `openshift-lightspeed` na
 
 | Environment variable | Default | Description |
 |---|---|---|
-| `ALERTMANAGER_URL` | `https://alertmanager-main.openshift-monitoring.svc:9094` | AlertManager API endpoint |
+| `ALERTMANAGER_URL` | `https://alertmanager-main.openshift-monitoring.svc:9094` | Local AlertManager endpoint; an explicitly empty value disables the local target |
+| `POD_NAMESPACE` | `openshift-lightspeed` | Namespace for runs and spoke credential Secrets |
+| `MULTICLUSTER_MAX_CONCURRENT_TARGETS` | `4` | Positive target concurrency limit when `--multicluster` is enabled |
 
 ### Suspended mode
 
@@ -72,7 +74,9 @@ spec:
 
 ### ConfigMap
 
-Runtime-tunable parameters are read from the `alerts-adapter-config` ConfigMap in the `openshift-lightspeed` namespace (key: `config.yaml`), mounted as a volume and read once at startup. The operator restarts the adapter pod when the ConfigMap changes. If the ConfigMap is missing, defaults are used. Invalid YAML or unparseable duration values cause the adapter to fail to start.
+The adapter reads `/etc/alerts-adapter/config.yaml` once at startup. The classic Lightspeed operator enables the adapter through `OLSConfig.spec.ols.deployment.alertsAdapter.configMapRef`, mounts the referenced ConfigMap when present, and restarts the pod on configuration changes. If the file is missing, defaults are used. Invalid YAML, invalid duration syntax, or other read errors fail startup.
+
+The direct deployment in `manifests/` requires the `alerts-adapter-config` ConfigMap. Restart that deployment after changing its data. It has no operator-managed restart. The hub deployment uses `hub-alerts-adapter-config`.
 
 | Field | Default | Description |
 |---|---|---|
@@ -91,6 +95,14 @@ Skills (OCI images with runbook paths) are configured at the run level and are a
 | `tools.skills` | Skills applied to all configured steps |
 
 Each skills entry requires `image` (OCI image reference) and `paths` (list of paths within the image).
+
+#### Agents
+
+Each workflow step selects its agent using this order: `agent.<step>`, then `agent.default`, then `default`. The supported step fields are `agent.analysis`, `agent.execution`, and `agent.verification`. Empty values use the fallback. The adapter does not check whether the named Agent exists.
+
+#### Multicluster
+
+Start with `--multicluster` to discover and watch SpokeClusters. The local target remains enabled unless `ALERTMANAGER_URL` is explicitly empty. The hub operator sets it empty for its dedicated adapter. An absent concurrency variable uses four; an explicitly invalid value fails startup. See the [multicluster spec](.ai/spec/what/multicluster.md).
 
 #### Example ConfigMap
 
@@ -127,7 +139,7 @@ data:
 - [ARCHITECTURE.md](ARCHITECTURE.md) — design rationale, requirements, deployment model, and future work
 - [docs/receivers.md](docs/receivers.md) — what AlertManager receivers are and how the adapter uses them for filtering
 - [test/e2e/README.md](test/e2e/README.md) — how to run E2E tests locally and in CI
-- [openspec/specs/](openspec/specs/) — detailed specs for each subsystem, managed with the [OpenSpec](https://github.com/Fission-AI/OpenSpec) framework
+- [.ai/spec/](.ai/spec/README.md) — current behavior, implementation guides, and planned corrections
 
 ## License
 

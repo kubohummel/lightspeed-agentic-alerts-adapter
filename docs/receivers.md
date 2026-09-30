@@ -25,7 +25,7 @@ The alerts adapter uses receivers as a **scoping mechanism** to control which al
 
 ### Filtering logic
 
-When AlertManager returns its list of firing alerts (`GET /api/v2/alerts`), each alert includes the receivers it was dispatched to. The adapter applies a receiver filter as the **first check** in its reconcile loop, before severity filtering, initial delay, or deduplication checks:
+When AlertManager returns its list of firing alerts (`GET /api/v2/alerts`), each alert includes its receivers. The adapter applies the receiver filter first, before pre-run delay, deduplication, and creation backoff. It has no separate severity filter:
 
 1. Read the `filtering.allowedReceivers` list from configuration (also accepts top-level `allowedReceivers` for backward compatibility).
 2. For each alert, iterate over its receivers.
@@ -36,11 +36,11 @@ This means the routing decisions already made by AlertManager — based on label
 
 ### Default behavior
 
-When no `filtering.allowedReceivers` field is configured (or the ConfigMap is absent), the adapter defaults to an empty list. This means no alerts produce AgenticRuns until receivers are explicitly configured in the ConfigMap.
+When neither receiver field is configured, or the configuration file is missing at startup, the adapter uses an empty list. No alerts produce AgenticRuns until receivers are explicitly configured and the process is restarted.
 
 ### Configuration
 
-The allowlist is set via the `alerts-adapter-config` ConfigMap in the `openshift-lightspeed` namespace:
+The adapter reads the allowlist once at startup from `/etc/alerts-adapter/config.yaml`. The direct deployment mounts the `alerts-adapter-config` ConfigMap in `openshift-lightspeed`, as shown below. The classic operator can mount another ConfigMap through `OLSConfig.spec.ols.deployment.alertsAdapter.configMapRef`.
 
 ```yaml
 apiVersion: v1
@@ -63,4 +63,4 @@ Key behaviors:
 - **Explicit empty list (`[]`)** — disables all AgenticRun creation; no alerts are processed.
 - **Case-insensitive** — `"Critical"`, `"critical"`, and `"CRITICAL"` all match the same receiver.
 - **Multiple receivers** — an alert passes if *any* of its receivers appears in the allowlist.
-- **Hot-reloadable** — changes to the ConfigMap take effect on the next poll cycle without restarting the adapter.
+- **Restart required** — changes take effect after a process restart. The classic operator restarts its adapter when the referenced ConfigMap changes. Restart a direct deployment yourself after editing its ConfigMap.

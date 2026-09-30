@@ -36,7 +36,7 @@ IMAGE=quay.io/$USER/alerts-adapter:dev make deploy-e2e
 
 ## Running in CI (ci-operator)
 
-ci-operator handles image building automatically. The ci-operator config declares:
+When a CI job is configured in `openshift/release`, ci-operator can build the image with:
 
 ```yaml
 images:
@@ -52,7 +52,7 @@ dependencies:
   env: IMAGE
 ```
 
-The test step receives `IMAGE` as an env var and calls `make deploy-e2e` + `make test-e2e`. No manual build or push is needed.
+The test step receives `IMAGE` and calls `make deploy-e2e` and `make test-e2e`. Job and step-registry definitions live outside this repo; check `openshift/release` for their current status.
 
 ## Environment Variables
 
@@ -77,10 +77,11 @@ The deploy script (`hack/deploy-e2e.sh`) patches the adapter ConfigMap with test
 ## What's Tested
 
 - **Happy path**: Firing alert creates AgenticRun with correct labels
-- **Severity filtering**: Alerts with severity `info` or `none` are skipped
 - **Receiver filtering**: Alerts routed to non-allowed receivers (e.g., `Critical` when only `default` is allowed) are skipped
 - **Active run deduplication**: No duplicate AgenticRun created when an active run exists for the same dedup fingerprint
 - **Ignored label deduplication**: Alerts differing only in ignored labels (`pod`, `instance`, etc.) are treated as duplicates
-- **Post-run delay**: No new AgenticRun created within `postRunDelay` after a terminal run; new run created after delay expires
+- **Post-run delay**: A recent terminal run blocks creation; an older terminal run with a different name permits a new run after the delay
 - **Fingerprint labels**: Both `alert-fingerprint` and `alert-group-id` are set
 - **Error handling**: 409 AlreadyExists logged at Info level (not Error)
+
+The adapter has no separate severity filter. Receiver tests depend on the cluster's AlertManager routing. These tests do not cover every open gap in the [current specs](../../.ai/spec/README.md#open-work).

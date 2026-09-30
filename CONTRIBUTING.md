@@ -10,15 +10,15 @@
 
 ### Proposing changes
 
-This project uses the [OpenSpec](https://github.com/Fission-AI/OpenSpec) framework to manage specs and changes. Before starting implementation, propose your change through OpenSpec:
+Start with the [spec index](.ai/spec/README.md). Behavioral contracts live in `.ai/spec/what/`; implementation guides live in `.ai/spec/how/`.
 
-1. Run `/openspec-propose` (or `/opsx:propose`) to create a proposal with design, specs, and tasks
-2. Get the proposal reviewed and approved
-3. Implement the change following the generated tasks
-4. Run `/openspec-verify-change` to verify the implementation matches the spec
-5. Archive the change with `/openspec-archive-change` once merged
+1. Describe the change in the affected spec and mark new behavior `[PLANNED]`.
+2. Get the proposal reviewed and approved.
+3. Implement the change and check it against the spec.
+4. Update implementation guides and replace planned markers when the behavior is implemented.
+5. Update the parent Lightspeed specs when a contract spans repositories.
 
-Specs live in [`openspec/specs/`](openspec/specs/) and changes are tracked in [`openspec/changes/`](openspec/changes/).
+Keep existing rule identifiers stable. Use sub-numbers for new rules and record important design decisions in `.ai/spec/decisions/`, or in the parent workspace for shared decisions.
 
 ### Code changes
 

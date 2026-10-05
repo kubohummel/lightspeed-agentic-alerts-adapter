@@ -124,10 +124,6 @@ func BuildForTarget(a *models.GettableAlert, tools config.ToolsConfig, agent con
 		p.Spec.TargetCluster = targetCluster
 	}
 
-	if namespace != "" {
-		p.Spec.TargetNamespaces = []string{namespace}
-	}
-
 	if len(tools.Shared) > 0 {
 		p.Spec.Tools = agenticv1alpha1.ToolsSpec{Skills: tools.Shared}
 	}

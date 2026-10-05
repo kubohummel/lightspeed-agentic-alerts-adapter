@@ -14,7 +14,6 @@ import (
 
 const (
 	LabelSpokeCluster = "hub.openshift.io/spoke-cluster"
-	localTargetID     = "local"
 	spokeTargetPrefix = "spoke-"
 	targetHashLen     = 12
 	targetIDMaxLen    = 63

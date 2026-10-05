@@ -8,8 +8,8 @@ Translates AlertManager alerts into AgenticRun custom resources with determinist
 
 1. The adapter SHALL convert an AlertManager alert into an `AgenticRun` CR with deterministic naming, Kubernetes-safe metadata, and a templated request.
 2. Two fingerprint labels SHALL be set on each AgenticRun: `agentic.openshift.io/alert-fingerprint` with the original AlertManager fingerprint (truncated to 8 characters) for UI lookups, and `agentic.openshift.io/alert-group-id` with the stable fingerprint for deduplication.
-3. When the alert has a `namespace` label, the AgenticRun name SHALL be `{alertname}-{namespace}-{startsAt_hash}` and `spec.targetNamespaces` SHALL be set to `[namespace]`.
-4. When the alert has no `namespace` label, the AgenticRun name SHALL be `{alertname}-{startsAt_hash}` and `spec.targetNamespaces` SHALL be omitted.
+3. When the alert has a `namespace` label, the AgenticRun name SHALL be `{alertname}-{namespace}-{startsAt_hash}`.
+4. When the alert has no `namespace` label, the AgenticRun name SHALL be `{alertname}-{startsAt_hash}`.
 4a. In both name formats, `startsAt_hash` SHALL be the first eight lowercase hex characters of SHA-256 over `startsAt` formatted in UTC using RFC 3339. When the reconciliation target identity is non-empty, the hash input SHALL append a null byte (`\0`) followed by that target identity. When the target identity is empty, the hash input SHALL contain only the formatted time.
 5. Building the same alert twice with the same target settings SHALL produce AgenticRuns with identical names, enabling Kubernetes 409 deduplication for the exact same alert instance.
 6. When equivalent alerts from two reconciliation targets are built with different target identities, their AgenticRuns SHALL have distinct deterministic names, while repeated builds for either target identity SHALL retain the same name.

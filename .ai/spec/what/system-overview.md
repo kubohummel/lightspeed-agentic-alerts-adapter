@@ -9,7 +9,7 @@ The alerts adapter polls OpenShift AlertManager and creates `AgenticRun` resourc
 1. The adapter SHALL poll AlertManager at a configurable interval (default 30 seconds), fetch active alerts, and create runs that pass filtering and deduplication.
 2. The adapter SHALL run as a single-replica deployment. The default namespace SHALL be `openshift-lightspeed`.
 3. The adapter SHALL run an immediate poll on startup so it can see alerts still firing after a restart. Alerts that resolve during downtime may not be seen.
-4. All AgenticRuns SHALL be created in the adapter namespace selected by `POD_NAMESPACE`. The alert's namespace SHALL go in `spec.targetNamespaces`, not `metadata.namespace`.
+4. All AgenticRuns SHALL be created in the adapter namespace selected by `POD_NAMESPACE`.
 5. HTTP 409 AlreadyExists on creation SHALL be a no-op. The adapter SHALL not update or delete existing runs, including when alerts resolve.
 
 ### Component Responsibilities

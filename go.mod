@@ -8,7 +8,7 @@ require (
 	github.com/go-openapi/strfmt v0.27.2
 	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.43.0
-	github.com/openshift/lightspeed-agentic-operator/api v0.0.0-20260923155710-9a67bc7c38c0
+	github.com/openshift/lightspeed-agentic-operator/api v0.0.0-20261002145519-2ea6f249cf58
 	github.com/openshift/lightspeed-hub v0.0.0-20260911154804-5f9c9000d10f
 	github.com/prometheus/alertmanager v0.34.1
 	go.yaml.in/yaml/v3 v3.0.5
@@ -64,7 +64,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.24.1 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
-	github.com/prometheus/common v0.70.1 // indirect
+	github.com/prometheus/common v0.71.0 // indirect
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
@@ -72,6 +72,7 @@ require (
 	go.opentelemetry.io/otel v1.46.0 // indirect
 	go.opentelemetry.io/otel/metric v1.46.0 // indirect
 	go.opentelemetry.io/otel/trace v1.46.0 // indirect
+	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	golang.org/x/mod v0.41.0 // indirect
 	golang.org/x/net v0.58.0 // indirect

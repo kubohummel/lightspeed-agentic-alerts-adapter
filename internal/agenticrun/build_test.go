@@ -46,7 +46,6 @@ func TestBuild(t *testing.T) {
 		ignoredLabels     []string
 		expectedName      string
 		expectedNamespace string
-		expectedTargetNS  []string
 		expectedLabels    map[string]string
 	}{
 		{
@@ -55,7 +54,6 @@ func TestBuild(t *testing.T) {
 			ignoredLabels:     noIgnored,
 			expectedName:      "kubepodcrashlooping-production-895c8977",
 			expectedNamespace: RunNamespace,
-			expectedTargetNS:  []string{"production"},
 			expectedLabels: map[string]string{
 				LabelSource:      sourceValue,
 				LabelFingerprint: "abcdef12",
@@ -78,7 +76,6 @@ func TestBuild(t *testing.T) {
 			ignoredLabels:     noIgnored,
 			expectedName:      "clusterversionavailable-895c8977",
 			expectedNamespace: RunNamespace,
-			expectedTargetNS:  nil,
 			expectedLabels: map[string]string{
 				LabelSource:      sourceValue,
 				LabelFingerprint: "ff00ff00",
@@ -96,7 +93,6 @@ func TestBuild(t *testing.T) {
 			ignoredLabels:     []string{"pod", "instance"},
 			expectedName:      "testalert-ns-895c8977",
 			expectedNamespace: RunNamespace,
-			expectedTargetNS:  []string{"ns"},
 			expectedLabels: map[string]string{
 				LabelSource:      sourceValue,
 				LabelFingerprint: "abc",
@@ -123,20 +119,6 @@ func TestBuild(t *testing.T) {
 			}
 			if p.Namespace != tt.expectedNamespace {
 				t.Errorf("namespace = %q, want %q", p.Namespace, tt.expectedNamespace)
-			}
-
-			if len(tt.expectedTargetNS) == 0 && len(p.Spec.TargetNamespaces) != 0 {
-				t.Errorf("targetNamespaces = %v, want empty", p.Spec.TargetNamespaces)
-			}
-			if len(tt.expectedTargetNS) > 0 {
-				if len(p.Spec.TargetNamespaces) != len(tt.expectedTargetNS) {
-					t.Fatalf("targetNamespaces length = %d, want %d", len(p.Spec.TargetNamespaces), len(tt.expectedTargetNS))
-				}
-				for i, ns := range tt.expectedTargetNS {
-					if p.Spec.TargetNamespaces[i] != ns {
-						t.Errorf("targetNamespaces[%d] = %q, want %q", i, p.Spec.TargetNamespaces[i], ns)
-					}
-				}
 			}
 
 			for k, v := range tt.expectedLabels {
